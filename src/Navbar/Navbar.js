@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 import * as palette from '../Variables';
 import logo from '../assets/images/logo.png'
 import { AddPlant, Profile } from '../assets/AllSvg';
-// import { useUserAuth } from '../userAuthContext';
+import { useUserAuth } from '../userAuthContext';
 
 const Navbar = () => {
-   // const { user } = useUserAuth();
+   const { user } = useUserAuth();
 
    return (
       <Container>
@@ -24,11 +24,11 @@ const Navbar = () => {
          </AddBtn>
          <ProfileBtn>
             <Link to="/user-profile">
-               {/* {!user
+               {!user
                ? <Profile fill={palette.DARK_GREEN}/>
                : <img src={user.photoURL} alt="profile" width="50px" height="auto"/>
-               } */}
-               <Profile fill={palette.DARK_GREEN}/>
+               }
+               {/* <Profile fill={palette.DARK_GREEN}/> */}
             </Link>
          </ProfileBtn>
       </Container>
