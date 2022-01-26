@@ -7,6 +7,33 @@ import logo from '../assets/images/logo.png'
 import { AddPlant, Profile } from '../assets/AllSvg';
 // import { useUserAuth } from '../userAuthContext';
 
+const Navbar = () => {
+   // const { user } = useUserAuth();
+
+   return (
+      <Container>
+         <HomeBtn>
+            <Link to="/">
+               <img src={logo} width="50px" height="auto"/>
+            </Link>
+         </HomeBtn>
+         <AddBtn>
+            <Link to="/add-new-plant">
+               <AddPlant width={50} height={50} fill="#fff" />
+            </Link>
+         </AddBtn>
+         <ProfileBtn>
+            <Link to="/user-profile">
+               {/* {!user
+               ? <Profile fill={palette.DARK_GREEN}/>
+               : <img src={user.photoURL} alt="profile" width="50px" height="auto"/>
+               } */}
+               <Profile fill={palette.DARK_GREEN}/>
+            </Link>
+         </ProfileBtn>
+      </Container>
+   )
+}
 
 
 const Container = styled.div`
@@ -26,7 +53,6 @@ const Container = styled.div`
       width: 400px;
       left: 50%;
       transform: translateX(-50%);
-
    }
 `;
 
@@ -84,33 +110,5 @@ const ProfileBtn = styled.button`
       border-radius: 50%;
    }
 `;
-
-const Navbar = () => {
-   // const { user } = useUserAuth();
-
-   return (
-      <Container>
-         <HomeBtn>
-            <Link to="/">
-               <img src={logo} width="50px" height="auto"/>
-            </Link>
-         </HomeBtn>
-         <AddBtn>
-            <Link to="/add">
-               <AddPlant width={50} height={50} fill="#fff" />
-            </Link>
-         </AddBtn>
-         <ProfileBtn>
-            <Link to="/profile">
-               {/* {!user
-               ? <Profile fill={palette.DARK_GREEN}/>
-               : <img src={user.photoURL} alt="profile" width="50px" height="auto"/>
-               } */}
-               <Profile fill={palette.DARK_GREEN}/>
-            </Link>
-         </ProfileBtn>
-      </Container>
-   )
-}
 
 export default Navbar
