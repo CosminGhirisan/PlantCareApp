@@ -7,10 +7,12 @@ import * as palette from '../Variables';
 import { useUserAuth } from '../userAuthContext';
 import { auth, db } from '../firebase-config'
 import logo from '../assets/images/logo.png'
+import Loader from '../Components/Loader';
 
 const Main = () => {
   const { user } = useUserAuth();
   const [plantsList, setPlantsList] = useState([]);
+  const [loading, setLoading] = useState(true)
   const plantsCollectionRef = collection(db, "plants")
 
   useEffect(() => {
@@ -18,40 +20,44 @@ const Main = () => {
 
     const getPlants = async () => {
         const data = await getDocs(q);
-        setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));         
+        setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
+        setLoading(false);
     }
 
     getPlants();
   },[]);
 
-  return (
+  return (    
     <Container>
-      <div className='title'>
-        <h1>Hi, {user && user.displayName.split(" ")[0]}</h1>
-      </div>
-      {plantsList.map((plant) => {
-        return (
-          <>
-            {plant.author.id === auth.currentUser.uid && (
-              <PlantContainer key={plant.id}>
-                <ImageDiv>
-                  {plant.imagesUrl ? <img src={plant.imagesUrl[0]} alt="plant" /> : <img src={logo} alt='image'/>}
-                </ImageDiv>
-                <TextDiv>
-                    <div>
-                      <h4>{plant.plantName ? plant.plantName : <br/>}</h4>
-                      <p>{plant.plantLocation ? plant.plantLocation : <br/>}</p>
-                    </div>
-                    <div className='groupTwo'>
-                      <img src={plant.author.photo ? plant.author.photo : logo} alt="photo" />
-                      <LinkToPlant to={plant.id}>Check More</LinkToPlant>
-                    </div>
-                </TextDiv>
-              </PlantContainer>  
-            )}
-          </>
-        )
-      })}
+      {loading ? <Loader /> : 
+      <>
+        <div className='title'>
+          <h1>Hi, {user && user.displayName.split(" ")[0]}</h1>
+        </div>
+        {plantsList.map((plant) => {
+          return (
+            <>
+              {plant.author.id === auth.currentUser.uid && (
+                <PlantContainer key={plant.id}>
+                  <ImageDiv>
+                    {plant.imagesUrl ? <img src={plant.imagesUrl[0]} alt="plant" /> : <img src={logo} alt='image'/>}
+                  </ImageDiv>
+                  <TextDiv>
+                      <div>
+                        <h4>{plant.plantName ? plant.plantName : <br/>}</h4>
+                        <p>{plant.plantLocation ? plant.plantLocation : <br/>}</p>
+                      </div>
+                      <div className='groupTwo'>
+                        <img src={plant.author.photo ? plant.author.photo : logo} alt="photo" />
+                        <LinkToPlant to={plant.id}>Check More</LinkToPlant>
+                      </div>
+                  </TextDiv>
+                </PlantContainer>  
+              )}
+            </>
+          )
+        })}
+      </>}
        
        
     </Container>
@@ -71,7 +77,7 @@ const Container = styled.div`
 
   .title{
     width: 400px;
-    
+
     h1{
       color: ${palette.DARK_GREEN};
       margin-top: 3rem;
