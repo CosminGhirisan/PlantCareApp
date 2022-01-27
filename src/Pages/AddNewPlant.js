@@ -79,7 +79,8 @@ const AddPlant = () => {
          timestamp: serverTimestamp(),
          author: { 
             name: auth.currentUser.displayName, 
-            id: auth.currentUser.uid
+            id: auth.currentUser.uid,
+            photo: auth.currentUser.photoURL
          },
          imagesUrl: JSON.parse(localStorage.getItem("imagesUrl")),
          year: new Date().getFullYear()
