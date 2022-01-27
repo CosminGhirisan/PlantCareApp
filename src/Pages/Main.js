@@ -26,7 +26,9 @@ const Main = () => {
 
   return (
     <Container>
-      <h1>Hi, {user && user.displayName.split(" ")[0]}</h1>
+      <div className='title'>
+        <h1>Hi, {user && user.displayName.split(" ")[0]}</h1>
+      </div>
       {plantsList.map((plant) => {
         return (
           <>
@@ -63,24 +65,23 @@ const Container = styled.div`
   justify-content: start;
   width: 100%;
   height: 94vh;
+  background: transparent;
   margin: auto;
   overflow: scroll;
-  
-  /* background-color: rgba(255, 127, 80, 0.15); */
 
-  @media only screen and (min-width: 600px) {
-      width: 400px;
-   }
-
-  h1{
-    align-self: flex-start;
-    color: ${palette.DARK_GREEN};
-    margin-top: 3rem;
-    margin-bottom: 1rem;
-    font-size: ${palette.FONTSIZE_L};
-    text-align: center;
-    text-indent: 1rem;
+  .title{
+    width: 400px;
+    
+    h1{
+      color: ${palette.DARK_GREEN};
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      font-size: ${palette.FONTSIZE_L};
+      text-align: start;
+      text-indent: 1.5rem;
+    }
   }
+
 `;
 
 const PlantContainer = styled.div`
