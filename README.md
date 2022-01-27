@@ -1,6 +1,6 @@
 # PlantCareApp
 
-[LIVE SITE](-)
+[LIVE SITE](https://herbam08.web.app)
 
 ![Project Image](project-url)
 
