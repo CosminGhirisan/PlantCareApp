@@ -1,4 +1,4 @@
-import React, { useContext, useState, createContext, useEffect, useRef, useMemo } from "react";
+import React, { useContext, useState, createContext, useEffect, useRef } from "react";
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,6 @@ export function UserAuthContextProvider({ children }) {
    const [loading, setLoading] = useState(true)
    const plantsCollectionRef = collection(db, "plants");
 
-
    const signInWithGoogle = () => {
       signInWithPopup(auth, provider).then((result) => {
          localStorage.setItem("isAuth", true);
@@ -35,7 +34,7 @@ export function UserAuthContextProvider({ children }) {
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
          setUser(currentUser)
-      });      
+      });
 
       return () => unsubscribe();
    }, []);
@@ -51,13 +50,13 @@ export function UserAuthContextProvider({ children }) {
       }
 
       getPlants();     
-    },[searchTerm]);
+   },[searchTerm]);
 
-    useMemo(() => {
+   useEffect(() => {
       if(user) {
          setPlantsPerUser(plantsList.filter(x => x.author.id===user.uid).length);
       }
-    },[user]);
+   },[user, plantsList])
 
    return (
       <userAuthContext.Provider value={{
