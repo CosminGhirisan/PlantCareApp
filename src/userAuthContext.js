@@ -1,14 +1,21 @@
-import React, { useContext, useState, createContext, useEffect } from "react";
-
+import React, { useContext, useState, createContext, useEffect, useRef } from "react";
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth'
+import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { useNavigate } from "react-router-dom";
-import { auth, provider } from "./firebase-config";
+
+import { auth, provider, db } from "./firebase-config";
 
 const userAuthContext = createContext();
 
 export function UserAuthContextProvider({ children }) {
    let navigate = useNavigate();
-   const [user, setUser] = useState("")
+   const [user, setUser] = useState("");
+   const searchRefVal = useRef("")
+   const [searchTerm, setSearchTerm] = useState("");
+   const [plantsList, setPlantsList] = useState([]);
+   const [loading, setLoading] = useState(true)
+   const plantsCollectionRef = collection(db, "plants");
+
 
    const signInWithGoogle = () => {
       signInWithPopup(auth, provider).then((result) => {
@@ -32,11 +39,31 @@ export function UserAuthContextProvider({ children }) {
       return () => unsubscribe();
    }, []);
 
+   {/* get back the plants data from firestore */}
+   useEffect(() => {
+      const q = query(plantsCollectionRef, orderBy("timestamp", "desc"))
+  
+      const getPlants = async () => {
+          const data = await getDocs(q);
+          setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
+          setLoading(false);
+        }
+  
+      getPlants();
+      
+    },[searchTerm]);
+
    return (
       <userAuthContext.Provider value={{
          signInWithGoogle, 
          signUserOut, 
-         user
+         user,
+         loading,
+         searchRefVal,
+         setSearchTerm, 
+         searchRefVal,
+         plantsList,
+         searchTerm
       }}>
          { children }
       </userAuthContext.Provider>

@@ -11,65 +11,71 @@ import Loader from '../Components/Loader';
 import { Search } from '../assets/AllSvg';
 
 const Main = () => {
-  const { user } = useUserAuth();
-  const searchRefVal = useRef("")
-  const [searchTerm, setSearchTerm] = useState("");
-  const [plantsList, setPlantsList] = useState([]);
-  const [loading, setLoading] = useState(true)
-  const plantsCollectionRef = collection(db, "plants")
+  const { user, loading, searchRefVal, setSearchTerm, plantsList, searchTerm } = useUserAuth();
+  // const searchRefVal = useRef("")
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [plantsList, setPlantsList] = useState([]);
+  // const [loading, setLoading] = useState(true)
+  // const plantsCollectionRef = collection(db, "plants")
 
-  useEffect(() => {
-    const q = query(plantsCollectionRef, orderBy("timestamp", "desc"))
+  // useEffect(() => {
+  //   const q = query(plantsCollectionRef, orderBy("timestamp", "desc"))
 
-    const getPlants = async () => {
-        const data = await getDocs(q);
-        setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
-        setLoading(false);
-      }
-      
-    getPlants();
+  //   const getPlants = async () => {
+  //       const data = await getDocs(q);
+  //       setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
+  //       setLoading(false);
+  //     }
+
+  //   getPlants();
     
-  },[searchTerm]);
+  // },[searchTerm]);
 
   return (    
     <Container>
       {loading ? <Loader /> : 
       <>
-        <UserInfo className='userInfo'>
-          <img src={user.photoURL} alt="user" />
-          <div>
-            <h2>Welcome {user && user.displayName.split(" ")[0]}!</h2>
-            <p>10 Plants</p>
-          </div>
-        </UserInfo>
-        <SearchBar  >
-          <Search width="20px" height="20px" fill="#11493b"/>
-          <input type="search" placeholder='What are you looking for?' ref={searchRefVal} onChange={() => setSearchTerm(searchRefVal.current.value.toLowerCase())}/>
-        </SearchBar>
-        {plantsList.filter(e => e.plantName.toLowerCase().includes(searchTerm)).map((plant) => {
-          return (
-            <>
-              {(
-                <PlantContainer key={plant.id}>
-                  <ImageDiv>
-                    {plant.imagesUrl ? <img src={plant.imagesUrl[0]} alt="plant" /> : <img src={logo} alt='image'/>}
-                  </ImageDiv>
-                  <TextDiv>
-                      <div>
-                        <h4>{plant.plantName ? plant.plantName : <br/>}</h4>
-                        <p>{plant.plantLocation ? plant.plantLocation : <br/>}</p>
-                      </div>
-                      <div className='groupTwo'>
-                        <img src={plant.author.photo ? plant.author.photo : logo} alt="photo" />
-                        <LinkToPlant to={plant.id}>Check More</LinkToPlant>
-                      </div>
-                  </TextDiv>
-                </PlantContainer>  
-              )}
-            </>
-          )
-        })}
-      </>}
+        <SubContainer>
+          <UserInfo className='userInfo'>
+            <img src={user.photoURL} alt="user" />
+            <div>
+              <h1>Welcome {user && user.displayName.split(" ")[0]}!</h1>
+              <p>10 Plants</p>
+            </div>
+          </UserInfo>
+          <SearchBar  >
+            <Search width="20px" height="20px" fill="#11493b"/>
+            <input type="search" placeholder='What are you looking for?' ref={searchRefVal} onChange={() => setSearchTerm(searchRefVal.current.value.toLowerCase())}/>
+          </SearchBar>
+        </SubContainer>
+        <SubContainer>
+          <h2>Popular Plants</h2>
+          {plantsList.filter(e => e.plantName.toLowerCase().includes(searchTerm)).map((plant) => {
+            return (
+              <>
+                {(
+                  <PlantContainer key={plant.id}>
+                    <ImageDiv>
+                      {plant.imagesUrl ? <img src={plant.imagesUrl[0]} alt="plant" /> : <img src={logo} alt='image'/>}
+                    </ImageDiv>
+                    <TextDiv>
+                        <div>
+                          <h4>{plant.plantName ? plant.plantName : <br/>}</h4>
+                          <p>{plant.plantLocation ? plant.plantLocation : <br/>}</p>
+                        </div>
+                        <div className='groupTwo'>
+                          <img src={plant.author.photo ? plant.author.photo : logo} alt="photo" />
+                          <LinkToPlant to={plant.id}>Check More</LinkToPlant>
+                        </div>
+                    </TextDiv>
+                  </PlantContainer>  
+                )}
+              </>
+            )
+          })}
+        </SubContainer>
+      </>
+      }
        
        
     </Container>
@@ -88,6 +94,26 @@ const Container = styled.div`
   overflow: scroll;
 `;
 
+const SubContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  width: 400px;
+  margin-bottom: 20px;
+
+  :last-child{
+    margin-bottom: 10rem;
+  }
+
+  h2{
+    align-self: flex-start;
+    margin-top: 10px;
+    margin-left: 25px;
+    color: ${palette.DARK_GREEN};
+  }
+`;
+
 const UserInfo = styled.div`
   display: flex;
   align-items: center;
@@ -101,7 +127,7 @@ const UserInfo = styled.div`
     border-radius: 50%;
   }
 
-  h2{
+  h1{
     color: ${palette.LIGHT_GREEN};
     margin-top: -10px;
     margin-left: 10px;
@@ -114,7 +140,7 @@ const UserInfo = styled.div`
   p{
     color: ${palette.DARK_GREEN};
     margin-left: 10px;
-    font-size: ${palette.FONTSIZE_L};
+    font-size: ${palette.FONTSIZE_M};
     font-weight: bold;
   }
 `;
@@ -156,10 +182,6 @@ const PlantContainer = styled.div`
   border-radius: 20px;
   margin-top: 3rem;
   margin-bottom: 1rem;
-
-  :last-child{
-    margin-bottom: 10rem;
-  }
 `;
 
 const ImageDiv = styled.div`
