@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { Link } from 'react-router-dom';
@@ -8,9 +8,12 @@ import { useUserAuth } from '../userAuthContext';
 import { auth, db } from '../firebase-config'
 import logo from '../assets/images/logo.png'
 import Loader from '../Components/Loader';
+import { Search } from '../assets/AllSvg';
 
 const Main = () => {
   const { user } = useUserAuth();
+  const searchRefVal = useRef("")
+  const [searchTerm, setSearchTerm] = useState("");
   const [plantsList, setPlantsList] = useState([]);
   const [loading, setLoading] = useState(true)
   const plantsCollectionRef = collection(db, "plants")
@@ -22,22 +25,31 @@ const Main = () => {
         const data = await getDocs(q);
         setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
         setLoading(false);
-    }
-
+      }
+      
     getPlants();
-  },[]);
+    
+  },[searchTerm]);
 
   return (    
     <Container>
       {loading ? <Loader /> : 
       <>
-        <div className='title'>
-          <h1>Hi, {user && user.displayName.split(" ")[0]}</h1>
-        </div>
-        {plantsList.map((plant) => {
+        <UserInfo className='userInfo'>
+          <img src={user.photoURL} alt="user" />
+          <div>
+            <h2>Welcome {user && user.displayName.split(" ")[0]}!</h2>
+            <p>10 Plants</p>
+          </div>
+        </UserInfo>
+        <SearchBar  >
+          <Search width="20px" height="20px" fill="#11493b"/>
+          <input type="search" placeholder='What are you looking for?' ref={searchRefVal} onChange={() => setSearchTerm(searchRefVal.current.value.toLowerCase())}/>
+        </SearchBar>
+        {plantsList.filter(e => e.plantName.toLowerCase().includes(searchTerm)).map((plant) => {
           return (
             <>
-              {plant.author.id === auth.currentUser.uid && (
+              {(
                 <PlantContainer key={plant.id}>
                   <ImageDiv>
                     {plant.imagesUrl ? <img src={plant.imagesUrl[0]} alt="plant" /> : <img src={logo} alt='image'/>}
@@ -74,20 +86,65 @@ const Container = styled.div`
   background: transparent;
   margin: auto;
   overflow: scroll;
+`;
 
-  .title{
-    width: 400px;
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  width: 400px;
+  min-height: 100px;
+  margin-left: 40px;
 
-    h1{
-      color: ${palette.DARK_GREEN};
-      margin-top: 3rem;
-      margin-bottom: 1rem;
-      font-size: ${palette.FONTSIZE_L};
-      text-align: start;
-      text-indent: 1.5rem;
+  img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  h2{
+    color: ${palette.LIGHT_GREEN};
+    margin-top: -10px;
+    margin-left: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-size: ${palette.FONTSIZE_S};
+    font-weight: 400;
+    letter-spacing: .5px;
+  }
+
+  p{
+    color: ${palette.DARK_GREEN};
+    margin-left: 10px;
+    font-size: ${palette.FONTSIZE_L};
+    font-weight: bold;
+  }
+`;
+
+const SearchBar = styled.div`
+  position: relative;
+  input{
+    width: 350px;
+    min-height: 35px;
+    background-color: ${palette.LIGHT_GREEN};
+    border: none;
+    border-radius: 15px;
+    padding-left: 35px;
+    opacity: .3;
+
+    ::placeholder{
+    color: ${palette.DARK_GREEN};
+    }
+
+    :hover{
+      cursor: pointer;
+      opacity: .5;
     }
   }
 
+  svg{
+    position: absolute;
+    top: 7px;
+    left: 10px;
+  }
 `;
 
 const PlantContainer = styled.div`
