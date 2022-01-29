@@ -1,4 +1,4 @@
-import React, { useContext, useState, createContext, useEffect, useRef } from "react";
+import React, { useContext, useState, createContext, useEffect, useRef, useMemo } from "react";
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ export function UserAuthContextProvider({ children }) {
    const searchRefVal = useRef("")
    const [searchTerm, setSearchTerm] = useState("");
    const [plantsList, setPlantsList] = useState([]);
+   const [plantsPerUser, setPlantsPerUser] = useState(0);
    const [loading, setLoading] = useState(true)
    const plantsCollectionRef = collection(db, "plants");
 
@@ -34,7 +35,7 @@ export function UserAuthContextProvider({ children }) {
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
          setUser(currentUser)
-      });
+      });      
 
       return () => unsubscribe();
    }, []);
@@ -44,14 +45,19 @@ export function UserAuthContextProvider({ children }) {
       const q = query(plantsCollectionRef, orderBy("timestamp", "desc"))
   
       const getPlants = async () => {
-          const data = await getDocs(q);
-          setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
-          setLoading(false);
-        }
-  
-      getPlants();
-      
+         const data = await getDocs(q);
+         setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
+         setLoading(false);
+      }
+
+      getPlants();     
     },[searchTerm]);
+
+    useMemo(() => {
+      if(user) {
+         setPlantsPerUser(plantsList.filter(x => x.author.id===user.uid).length);
+      }
+    },[user]);
 
    return (
       <userAuthContext.Provider value={{
@@ -63,7 +69,8 @@ export function UserAuthContextProvider({ children }) {
          setSearchTerm, 
          searchRefVal,
          plantsList,
-         searchTerm
+         searchTerm,
+         plantsPerUser
       }}>
          { children }
       </userAuthContext.Provider>

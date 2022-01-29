@@ -1,35 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
 import styled from 'styled-components';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { Link } from 'react-router-dom';
 
 import * as palette from '../Variables';
 import { useUserAuth } from '../userAuthContext';
-import { auth, db } from '../firebase-config'
 import logo from '../assets/images/logo.png'
 import Loader from '../Components/Loader';
 import { Search } from '../assets/AllSvg';
 
 const Main = () => {
-  const { user, loading, searchRefVal, setSearchTerm, plantsList, searchTerm } = useUserAuth();
-  // const searchRefVal = useRef("")
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [plantsList, setPlantsList] = useState([]);
-  // const [loading, setLoading] = useState(true)
-  // const plantsCollectionRef = collection(db, "plants")
-
-  // useEffect(() => {
-  //   const q = query(plantsCollectionRef, orderBy("timestamp", "desc"))
-
-  //   const getPlants = async () => {
-  //       const data = await getDocs(q);
-  //       setPlantsList(data.docs.map((doc) => ({...doc.data(), id:doc.id})));
-  //       setLoading(false);
-  //     }
-
-  //   getPlants();
-    
-  // },[searchTerm]);
+  const { user, loading, searchRefVal, setSearchTerm, plantsList, searchTerm, plantsPerUser } = useUserAuth();
 
   return (    
     <Container>
@@ -40,7 +20,7 @@ const Main = () => {
             <img src={user.photoURL} alt="user" />
             <div>
               <h1>Welcome {user && user.displayName.split(" ")[0]}!</h1>
-              <p>10 Plants</p>
+              <p>{plantsPerUser === 1 ? `${plantsPerUser} Plant` : `${plantsPerUser} Plants`}</p>
             </div>
           </UserInfo>
           <SearchBar  >
@@ -52,7 +32,7 @@ const Main = () => {
           <h2>Popular Plants</h2>
           {plantsList.filter(e => e.plantName.toLowerCase().includes(searchTerm)).map((plant) => {
             return (
-              <>
+              <div key={plant.id}>
                 {(
                   <PlantContainer key={plant.id}>
                     <ImageDiv>
@@ -70,7 +50,7 @@ const Main = () => {
                     </TextDiv>
                   </PlantContainer>  
                 )}
-              </>
+              </div>
             )
           })}
         </SubContainer>
