@@ -80,6 +80,28 @@ const Plant = () => {
             <p>{plant.plantDescription ? plant.plantDescription : "No description yet!"}</p>
           </Description>
         </SubContainer>
+        <SubContainer>
+          <SubSubCont>
+            <CareTypes>
+              <h4>Sun Exposure</h4>
+              <div className='careLine'>
+                <span className={`careWidth ${plant.light === "Full Light Needed" ? "sunWidthFull" : plant.light === "Partial Light Needed" ? "sunWidthPartial" : plant.light === "Low Light Needed" ? "sunWidthZero" : "noInfo"}`}>
+                </span>
+                <LightFull width="20px" className={plant.light === "Full Light Needed" ? "careFull" : plant.light === "Partial Light Needed" ? "careMiddle" : plant.light === "Low Light Needed" ? "careZero" : "noInfo"}/>
+                <p>{plant.light ? plant.light : "No information"}</p>
+              </div>
+            </CareTypes>
+            <CareTypes>
+              <h4>Watering</h4>
+              <div className='careLine'>
+                <span className={`careWidth ${plant.water === "More Water Needed" ? "waterWidthFull" : plant.water === "Normal Water Needed" ? "waterWidthPartial" : plant.water === "Less Water Needed" ? "sunWidthZero" : "noInfo"}`}>
+                </span>
+                <WaterFull width="18px" fill="#0051ff" className={plant.water === "More Water Needed" ? "careFull" : plant.water === "Normal Water Needed" ? "careMiddle" : plant.water === "Less Water Needed" ? "careZero" : "noInfo"}/>
+                <p>{plant.water ? plant.water : "No information"}</p>
+              </div>
+            </CareTypes>
+          </SubSubCont>
+        </SubContainer>
       </>
       }     
     </Container>
@@ -109,55 +131,6 @@ const SubContainer = styled.div`
 
   :last-child{
     margin-bottom: 10rem;
-  }
-`;
-
-const Description = styled.div`
-  position: relative;
-  align-self: flex-end;
-  width: 80%;
-  color: ${palette.DARK_GREEN};
-  background-color: ${palette.LIGHT_GREEN};
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -120px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-  border-top-left-radius: 40px;
-  border-bottom-left-radius: 40px;
-  padding: 20px 20px 20px 25px;
-
-  h4{
-    margin-bottom: 25px;
-  }
-
-  .plantsAge{
-    position: absolute;
-    top: 40px;
-    right: 20px;
-    color: ${palette.DARK_GRAY};
-    font-size: calc(${palette.FONTSIZE_XS} + 2px);
-    font-style: italic;
-    font-weight: lighter;
-  }
-
-  p{
-    text-align: justify;
-    font-size: ${palette.FONTSIZE_S};
-  }
-`;
-
-const FavoriteBtn = styled.button`
-  position: absolute;
-    top: -20px;
-    right: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: ${palette.DARK_GREEN};
-  border: none;
-
-  :hover{
-    cursor: pointer;
   }
 `;
 
@@ -253,6 +226,156 @@ const RightImage = styled.div`
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
   overflow: hidden;
   z-index: 0;
+`;
+
+const Description = styled.div`
+  position: relative;
+  align-self: flex-end;
+  width: 80%;
+  color: ${palette.DARK_GREEN};
+  background-color: ${palette.LIGHT_GREEN};
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -120px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+  padding: 20px 20px 20px 25px;
+
+  h4{
+    margin-bottom: 25px;
+  }
+
+  .plantsAge{
+    position: absolute;
+    top: 40px;
+    right: 20px;
+    color: ${palette.DARK_GRAY};
+    font-size: calc(${palette.FONTSIZE_XS} + 2px);
+    font-style: italic;
+    font-weight: lighter;
+  }
+
+  p{
+    text-align: justify;
+    font-size: ${palette.FONTSIZE_S};
+  }
+`;
+
+const FavoriteBtn = styled.button`
+  position: absolute;
+    top: -20px;
+    right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${palette.DARK_GREEN};
+  border: none;
+
+  :hover{
+    cursor: pointer;
+  }
+`;
+
+const SubSubCont = styled.div`
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+`;
+
+const CareTypes = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+
+  background-color: ${palette.LIGHT_GREEN};
+  border-radius: 15px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -120px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+
+  h4{
+    display: block;
+    color: ${palette.DARK_GREEN};
+    margin: 15px 0;
+    font-size: ${palette.FONTSIZE_S};
+    text-align: center;
+  }
+
+  .careLine{
+    position: relative;
+    width: 75%;
+    height: 4px;
+    background-color: ${palette.LIGHT_GRAY};
+    border-radius: 4px;
+    margin-bottom: 35px;
+    
+    svg{
+      position: absolute;
+      top: -8px;
+      z-index: 99;
+    }
+
+    p{
+      color: ${palette.DARK_GRAY};
+      margin: 10px 0;
+      font-size: ${palette.FONTSIZE_XS};
+      text-align: center;
+    }
+
+    .careWidth{
+      position: absolute;
+        top: -1px;
+        left: 0;
+      width: 5%;
+      height: 6px;
+      border-radius: 4px;
+    }
+
+    .careFull{
+      left: 90%;
+    }
+
+    .careMiddle{
+      left: 45%;
+    }
+
+    .careZero{
+      left: -10px;
+    }
+
+    .noInfo{
+      display: none;
+    }
+
+    .sunWidthFull {
+      background-color: #ffff00;
+      width: 100%;
+    }
+
+    .sunWidthPartial {
+      background-color: #ffff00;
+      width: 50%;
+    }
+
+    .sunWidthZero {
+      width: 0%;
+    }
+
+    .waterWidthFull {
+      background-color: #0077ff;
+      width: 100%;
+    }
+
+    .waterWidthPartial {
+      background-color: #0077ff;
+      width: 50%;
+    }
+
+    .waterWidthZero {
+      width: 0%;
+    }
+  }
 `;
 
 export default Plant;

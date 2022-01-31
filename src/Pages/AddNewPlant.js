@@ -147,7 +147,7 @@ const AddPlant = () => {
                         <label>
                            <input type="radio" name="radioBtn-water" value="More Water Needed" onChange={e => setWater(e.target.value)}/>
                            <div className="icon-box">
-                              <WaterFull />
+                              <WaterFull  fill="#2b7b57"/>
                            </div>
                         </label>
                      </Checkboxes>
