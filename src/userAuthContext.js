@@ -1,6 +1,6 @@
 import React, { useContext, useState, createContext, useEffect, useRef } from "react";
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth'
-import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import { collection, getDocs, orderBy, query, deleteDoc, doc } from 'firebase/firestore'
 import { useNavigate } from "react-router-dom";
 
 import { auth, provider, db } from "./firebase-config";
@@ -14,7 +14,7 @@ export function UserAuthContextProvider({ children }) {
    const [searchTerm, setSearchTerm] = useState("");
    const [plantsList, setPlantsList] = useState([]);
    const [plantsPerUser, setPlantsPerUser] = useState(0);
-   const [loading, setLoading] = useState(true)
+   const [loading, setLoading] = useState(true);
    const plantsCollectionRef = collection(db, "plants");
 
    const signInWithGoogle = () => {
@@ -30,6 +30,12 @@ export function UserAuthContextProvider({ children }) {
         navigate("/login");
       })
    } 
+
+   const handleDelete = async (id) => {
+      const docRef = doc(db, "plants", id);
+      await deleteDoc(docRef);
+      navigate("/user-profile");
+   }
 
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -49,9 +55,10 @@ export function UserAuthContextProvider({ children }) {
          setLoading(false);
       }
 
-      getPlants();     
-   },[searchTerm]);
+      getPlants();
+   },[searchTerm, handleDelete]);
 
+   {/* get the number of the plants Current User added */}
    useEffect(() => {
       if(user) {
          setPlantsPerUser(plantsList.filter(x => x.author.id===user.uid).length);
@@ -63,6 +70,7 @@ export function UserAuthContextProvider({ children }) {
          signInWithGoogle, 
          signUserOut, 
          user,
+         handleDelete,
          loading,
          searchRefVal,
          setSearchTerm, 

@@ -5,22 +5,24 @@ import styled from 'styled-components';
 
 import { db } from '../firebase-config';
 import * as palette from '../Variables';
-import { LightFull, LightLow, LightPartial, Water, WaterFull, WaterHalf, Heart } from '../assets/AllSvg';
+import { LightFull, WaterFull, Heart } from '../assets/AllSvg';
 import { useUserAuth } from '../userAuthContext';
 import Loader from '../Components/Loader';
 
 const Plant = () => {
   let { plantId } = useParams();
-  const { loading } = useUserAuth();
+  const { user, handleDelete } = useUserAuth();
   const [plant,setPlant] = useState([]);
+  const [isloading, setIsLoading] = useState(true);
   const [slideIndex, setSlideIndex] = useState(1);
   const [favourite, setFavourite] = useState(false);
-  const docRef = doc(db, "plants", plantId)
-
+  const docRef = doc(db, "plants", plantId);
+  
   useEffect(() => {
     const getPlant = async () => {
         const data = await getDoc(docRef);
-        setPlant(data.data());
+        setPlant({...data.data(), id:data.id});
+        setIsLoading(false);
     }
 
     getPlant();
@@ -52,57 +54,65 @@ const Plant = () => {
 
   return (
     <Container>
-      {loading ? <Loader /> : 
-      <>
-        <BackToHomePageBtn to="/">&#10140;</BackToHomePageBtn>
-        <Slider>
-          {plant.imagesUrl && plant.imagesUrl.map((imgUrl, index) => {
-            return (
-              <>
-                <RightImage className={slideIndex === index ? "show" : "hide"} >
-                  <img src={imgUrl} alt="Plant" />
-                </RightImage>
-                <LeftImage className={slideIndex === index + 1 ? "show" : "hide"} >
-                  <img src={imgUrl} alt="Plant" />
-                </LeftImage>
-                <p className='slideNumber'>{slideIndex} / {plant.imagesUrl.length}</p>
-              </>
-            )
-          })}
-          <a className="prev" onClick={prevSlide}>&#10094;</a>
-          <a className='next' onClick={nextSlide}>&#10095;</a>
-        </Slider>
-        <SubContainer>
-          <Description>
-            <h4>{plant.plantName}</h4>
-            <span className='plantsAge'>Plant's Age:{plant.yearsOld} {plant.yearsOld == 1 ?`Year`:`Years`}</span>
-            <FavoriteBtn onClick={handleFavourite}> <Heart width="25px" height="25px"fill={favourite ? 'red' : palette.LIGHT_GREEN}/></FavoriteBtn>
-            <p>{plant.plantDescription ? plant.plantDescription : "No description yet!"}</p>
-          </Description>
-        </SubContainer>
-        <SubContainer>
-          <SubSubCont>
-            <CareTypes>
-              <h4>Sun Exposure</h4>
-              <div className='careLine'>
-                <span className={`careWidth ${plant.light === "Full Light Needed" ? "sunWidthFull" : plant.light === "Partial Light Needed" ? "sunWidthPartial" : plant.light === "Low Light Needed" ? "sunWidthZero" : "noInfo"}`}>
-                </span>
-                <LightFull width="20px" className={plant.light === "Full Light Needed" ? "careFull" : plant.light === "Partial Light Needed" ? "careMiddle" : plant.light === "Low Light Needed" ? "careZero" : "noInfo"}/>
-                <p>{plant.light ? plant.light : "No information"}</p>
-              </div>
-            </CareTypes>
-            <CareTypes>
-              <h4>Watering</h4>
-              <div className='careLine'>
-                <span className={`careWidth ${plant.water === "More Water Needed" ? "waterWidthFull" : plant.water === "Normal Water Needed" ? "waterWidthPartial" : plant.water === "Less Water Needed" ? "sunWidthZero" : "noInfo"}`}>
-                </span>
-                <WaterFull width="18px" fill="#0051ff" className={plant.water === "More Water Needed" ? "careFull" : plant.water === "Normal Water Needed" ? "careMiddle" : plant.water === "Less Water Needed" ? "careZero" : "noInfo"}/>
-                <p>{plant.water ? plant.water : "No information"}</p>
-              </div>
-            </CareTypes>
-          </SubSubCont>
-        </SubContainer>
-      </>
+      {isloading ? <Loader /> : 
+        <>
+          <BackToHomePageBtn to="/">&#10140;</BackToHomePageBtn>
+          <Slider>
+            {plant.imagesUrl && plant.imagesUrl.map((imgUrl, index) => {
+              return (
+                <div key={(plant.id + Math.random() * 1000).replace(".","a")}>
+                  <RightImage className={slideIndex === index ? "show" : "hide"} >
+                    <img src={imgUrl} alt="Plant" />
+                  </RightImage>
+                  <LeftImage className={slideIndex === index + 1 ? "show" : "hide"} >
+                    <img src={imgUrl} alt="Plant" />
+                  </LeftImage>
+                  <p className='slideNumber'>{slideIndex} / {plant.imagesUrl.length}</p>
+                </div>
+              )
+            })}
+            <a className="prev" onClick={prevSlide}>&#10094;</a>
+            <a className='next' onClick={nextSlide}>&#10095;</a>
+          </Slider>
+          <SubContainer>
+            <Description>
+              <h4>{plant.plantName}</h4>
+              <span className='plantsAge'>Plant's Age:{plant.yearsOld} {plant.yearsOld == 1 ?`Year`:`Years`}</span>
+              <FavoriteBtn onClick={handleFavourite}> <Heart width="25px" height="25px"fill={favourite ? 'red' : palette.LIGHT_GREEN}/></FavoriteBtn>
+              <p>{plant.plantDescription ? plant.plantDescription : "No description yet!"}</p>
+            </Description>
+          </SubContainer>
+          <SubContainer>
+            <SubContainerPlantCare>
+              <CareTypes>
+                <h4>Sun Exposure</h4>
+                <div className='careLine'>
+                  <span className={`careWidth ${plant.light === "Full Light Needed" ? "sunWidthFull" : plant.light === "Partial Light Needed" ? "sunWidthPartial" : plant.light === "Low Light Needed" ? "sunWidthZero" : "noInfo"}`}>
+                  </span>
+                  <LightFull width="20px" className={plant.light === "Full Light Needed" ? "careFull" : plant.light === "Partial Light Needed" ? "careMiddle" : plant.light === "Low Light Needed" ? "careZero" : "noInfo"}/>
+                  <p>{plant.light ? plant.light : "No information"}</p>
+                </div>
+              </CareTypes>
+              <CareTypes>
+                <h4>Watering</h4>
+                <div className='careLine'>
+                  <span className={`careWidth ${plant.water === "More Water Needed" ? "waterWidthFull" : plant.water === "Normal Water Needed" ? "waterWidthPartial" : plant.water === "Less Water Needed" ? "sunWidthZero" : "noInfo"}`}>
+                  </span>
+                  <WaterFull width="18px" fill="#0051ff" className={plant.water === "More Water Needed" ? "careFull" : plant.water === "Normal Water Needed" ? "careMiddle" : plant.water === "Less Water Needed" ? "careZero" : "noInfo"}/>
+                  <p>{plant.water ? plant.water : "No information"}</p>
+                </div>
+              </CareTypes>
+            </SubContainerPlantCare>
+          </SubContainer>
+          <SubContainer>
+            
+          </SubContainer>
+          <SubContainer>
+            {plant.author.id === user.uid && 
+              <DeleteBtn onClick={() => handleDelete(plant.id)}>Delete</DeleteBtn>
+            }
+          </SubContainer>
+        </>
       }     
     </Container>
   )
@@ -277,7 +287,7 @@ const FavoriteBtn = styled.button`
   }
 `;
 
-const SubSubCont = styled.div`
+const SubContainerPlantCare = styled.div`
   display: flex;
   justify-content: space-around;
   width: 100%;
@@ -377,5 +387,29 @@ const CareTypes = styled.div`
     }
   }
 `;
+
+const DeleteBtn = styled.button`
+  align-self: flex-end;
+  color: #ffffff;
+  background-color: #c41717;
+  border: none;
+  border-radius: 5px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -120px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  padding: 12px 30px;
+  margin-right: 3px;
+  font-size: ${palette.FONTSIZE_M};
+  font-weight: bold;
+  letter-spacing: .5px;
+  transition: all 100ms ease;
+
+  :hover{
+    cursor: pointer;
+    transform: scale(1.03);
+  }
+
+  :active{
+    transform: scale(0.98);
+  }
+`; 
 
 export default Plant;
