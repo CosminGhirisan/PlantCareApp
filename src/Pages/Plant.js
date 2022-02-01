@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { db } from '../firebase-config';
 import * as palette from '../Variables';
-import { LightFull, WaterFull, Heart } from '../assets/AllSvg';
+import { LightFull, WaterFull, Heart, Star } from '../assets/AllSvg';
 import { useUserAuth } from '../userAuthContext';
 import Loader from '../Components/Loader';
 
@@ -60,7 +60,8 @@ const Plant = () => {
           <Slider>
             {plant.imagesUrl && plant.imagesUrl.map((imgUrl, index) => {
               return (
-                <div key={(plant.id + Math.random() * 1000).replace(".","a")}>
+                // <div key={(plant.id + Math.random() * 1000).replace(".","a")}>
+                <div>
                   <RightImage className={slideIndex === index ? "show" : "hide"} >
                     <img src={imgUrl} alt="Plant" />
                   </RightImage>
@@ -77,9 +78,12 @@ const Plant = () => {
           <SubContainer>
             <Description>
               <h4>{plant.plantName}</h4>
-              <span className='plantsAge'>Plant's Age:{plant.yearsOld} {plant.yearsOld == 1 ?`Year`:`Years`}</span>
+              <p className='plantRating'>
+                <Star width="15px"/>
+                <span>5.5 / 10 Reviews</span>
+              </p>
               <FavoriteBtn onClick={handleFavourite}> <Heart width="25px" height="25px"fill={favourite ? 'red' : palette.LIGHT_GREEN}/></FavoriteBtn>
-              <p>{plant.plantDescription ? plant.plantDescription : "No description yet!"}</p>
+              <p className='plantDescription'>{plant.plantDescription ? plant.plantDescription : "No description yet!"}</p>
             </Description>
           </SubContainer>
           <SubContainer>
@@ -105,7 +109,29 @@ const Plant = () => {
             </SubContainerPlantCare>
           </SubContainer>
           <SubContainer>
-            
+            <Comments>
+              <h3>Coments</h3>
+              <AddCommentsBtn>Add</AddCommentsBtn>
+              <Line />
+              <Comment>
+                <img src={plant.author.photo} alt="photo" />
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque quae nam at aperiam voluptatem repellat! Deleniti facilis fugiat eum est!</p>
+                <span>21.03.2022</span>
+              </Comment>
+              <Line /> 
+              <Comment>
+                <img src={plant.author.photo} alt="photo" />
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dicta, sit impedit error odit necessitatibus atque?</p>
+                <span>21.03.2022</span>
+              </Comment>
+              <Line />
+              <Comment>
+                <img src={plant.author.photo} alt="photo" />
+                <p>Lorem ipsum dolor sit amet.</p>
+                <span>21.03.2022</span>
+              </Comment>
+              <Line />
+            </Comments>
           </SubContainer>
           <SubContainer>
             {plant.author.id === user.uid && 
@@ -160,7 +186,7 @@ const BackToHomePageBtn = styled(Link)`
 const Slider = styled.div`
   position: relative;
   width: 400px;
-  margin: 30px 0;
+  margin: 40px 0;
 
   .slideNumber{
     position: absolute;
@@ -250,20 +276,27 @@ const Description = styled.div`
   padding: 20px 20px 20px 25px;
 
   h4{
+    font-size: ${palette.FONTSIZE_L};
     margin-bottom: 25px;
   }
 
-  .plantsAge{
+  .plantRating{
     position: absolute;
-    top: 40px;
-    right: 20px;
-    color: ${palette.DARK_GRAY};
+      top: 40px;
+      right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${palette.DARK_GREEN};
     font-size: calc(${palette.FONTSIZE_XS} + 2px);
-    font-style: italic;
-    font-weight: lighter;
+    font-weight: bold;
+
+    svg{
+      margin-right: 5px;
+    }
   }
 
-  p{
+  .plantDescription{
     text-align: justify;
     font-size: ${palette.FONTSIZE_S};
   }
@@ -386,6 +419,79 @@ const CareTypes = styled.div`
       width: 0%;
     }
   }
+`;
+
+const Comments = styled.div`
+  position: relative;
+  width: 90%;
+  color: ${palette.DARK_GREEN};
+  background-color: ${palette.LIGHT_GREEN};
+  border-radius: 15px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -120px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  padding: 20px;
+
+  h3{
+    display: block;
+    margin-bottom: 5px;
+  }
+`;
+
+const Comment = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+
+  img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+  }
+
+  p{
+    font-size: ${palette.FONTSIZE_S};
+    text-align: justify;
+    margin-left: 15px;
+    margin-bottom: 15px;
+  }
+
+  span{
+    position: absolute;
+      right: 0;
+      bottom: 0;
+    font-size: ${palette.FONTSIZE_XS};
+  }
+`;
+
+const AddCommentsBtn = styled.button`
+  position: absolute;
+    top: 15px;
+    right: 5%;
+  color: ${palette.DARK_GREEN};
+  background-color: ${palette.LIGHT_GREEN};
+  padding: 5px 20px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -120px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  font-weight: bold;
+  transition: all 100ms ease;
+
+  :hover{
+    cursor: pointer;
+    transform: scale(1.03);
+  }
+
+  :active{
+    transform: scale(0.98);
+  }
+`;
+
+const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${palette.DARK_GREEN};
+  margin: 15px 0;
 `;
 
 const DeleteBtn = styled.button`
