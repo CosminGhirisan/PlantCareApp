@@ -10,12 +10,14 @@ import AddNewPlant from "./Pages/AddNewPlant"
 import UserProfile from "./Pages/UserProfile"
 import Plant from "./Pages/Plant"
 import ProtectedRoute from "./Components/ProtectedRoute";
+import Construction from "./Components/Construction";
 
 
 function App() {
   return (
     <Container>
       <GlobalStyle /> {/*import Global Styles to the App*/}
+      <div className="underConstruction"><Construction /></div>
       <UserAuthContextProvider>
         <Navbar />
         <Routes>
@@ -48,6 +50,17 @@ function App() {
 
 const Container = styled.div`
   height: 100vh;
+
+  .underConstruction{
+    position: fixed;
+    top: 0;
+    width: 100%;
+    color: #fff;
+    background-color: #ff0000;
+    padding: 3px 0;
+    text-align: center;
+    z-index: 999;
+  }
 `;
 
 export default App;
