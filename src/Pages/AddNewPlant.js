@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
 import { addDoc, collection,  serverTimestamp } from "firebase/firestore"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 
 import * as palette from '../Variables';
 import { db, auth, storage } from '../firebase-config'
-import { useNavigate } from 'react-router-dom';
 import { LightFull, LightLow, LightPartial, Water, WaterFull, WaterHalf } from '../assets/AllSvg';
+import { useUserAuth } from '../userAuthContext';
 
 const AddPlant = () => {
+   const { user, plantsList, setPlantsPerUser } = useUserAuth();
    const [plantSpecies, setPlantSpecies] = useState('');
    const [plantName, setPlantName] = useState("");
    const [plantLocation, setPlantLocation] = useState("");
@@ -45,10 +47,8 @@ const AddPlant = () => {
 
    const uploadImages = (img) => {
       if(!img) return;
-
       const storageRef = ref(storage, `/images/${auth.currentUser.displayName}/${img.name}`);
       const uploadTask = uploadBytesResumable(storageRef, img);
-
       uploadTask.on(
          "state_changed", 
          (snapshot) => {
@@ -68,7 +68,7 @@ const AddPlant = () => {
    }
    
    const addNewPlant = async (e) => {      
-      await addDoc(plantsCollectionRef, {
+      const newPlantInfo = await addDoc(plantsCollectionRef, {
          plantSpecies, 
          plantName, 
          plantLocation, 
@@ -85,6 +85,29 @@ const AddPlant = () => {
          imagesUrl: JSON.parse(localStorage.getItem("imagesUrl")),
          year: new Date().getFullYear()
       });
+
+      {/* Create a new object with newest plant added information */}
+      let newPlant = { 
+         plantSpecies, 
+         plantName, 
+         plantLocation, 
+         plantDescription, 
+         careInstruction,
+         light,
+         water,
+         timestamp: serverTimestamp(),
+         author: { 
+            name: auth.currentUser.displayName, 
+            id: auth.currentUser.uid,
+            photo: auth.currentUser.photoURL
+         },
+         imagesUrl: JSON.parse(localStorage.getItem("imagesUrl")),
+         year: new Date().getFullYear(),
+         id: newPlantInfo.id
+      }
+
+      plantsList.unshift(newPlant); // Add the new plant information to the top of plantsList array
+      setPlantsPerUser(plantsList.filter(x => x.author.id===user.uid).length); // Modify the plantsPerUser array after added a new plant
       // alert("New Plant was added!")
       navigate("/");
       localStorage.removeItem("imagesUrl")

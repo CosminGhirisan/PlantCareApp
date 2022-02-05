@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { db } from '../firebase-config';
 import * as palette from '../Variables';
 import { LightFull, WaterFull, Heart, Star } from '../assets/AllSvg';
 import { useUserAuth } from '../userAuthContext';
@@ -11,23 +9,32 @@ import Loader from '../Components/Loader';
 
 const Plant = () => {
   let { plantId } = useParams();
-  const { user, handleDelete } = useUserAuth();
+  const { user, handleDelete, plantsList } = useUserAuth();
   const [plant,setPlant] = useState([]);
   const [isloading, setIsLoading] = useState(true);
   const [slideIndex, setSlideIndex] = useState(1);
   const [favourite, setFavourite] = useState(false);
-  const docRef = doc(db, "plants", plantId);
   
   useEffect(() => {
-    const getPlant = async () => {
+    setPlant(plantsList.filter(el => el.id === plantId)[0]);
+    setIsLoading(false);
+  },[])
+  
+  /* get the plant data from Firebase
+    import { doc } from 'firebase/firestore';
+    import { db } from '../firebase-config';
+    const docRef = doc(db, "plants", plantId);
+    useEffect(() => {
+      const getPlant = async () => {
         const data = await getDoc(docRef);
         setPlant({...data.data(), id:data.id});
         setIsLoading(false);
-    }
+      }
 
-    getPlant();
-  },[]);
-
+      getPlant();
+    },[]);
+  */
+  
   const nextSlide = () => {
     if(slideIndex !== plant.imagesUrl.length) {
       setSlideIndex(slideIndex + 1);
@@ -60,8 +67,7 @@ const Plant = () => {
           <Slider>
             {plant.imagesUrl && plant.imagesUrl.map((imgUrl, index) => {
               return (
-                // <div key={(plant.id + Math.random() * 1000).replace(".","a")}>
-                <div>
+                <div key={(plant.id + Math.random() * 1000).replace(".","a")}>
                   <RightImage className={slideIndex === index ? "show" : "hide"} >
                     <img src={imgUrl} alt="Plant" />
                   </RightImage>
@@ -72,8 +78,8 @@ const Plant = () => {
                 </div>
               )
             })}
-            <a className="prev" onClick={prevSlide}>&#10094;</a>
-            <a className='next' onClick={nextSlide}>&#10095;</a>
+            <button className="prev" onClick={prevSlide}>&#10094;</button>
+            <button className='next' onClick={nextSlide}>&#10095;</button>
           </Slider>
           <SubContainer>
             <Description>
@@ -114,19 +120,19 @@ const Plant = () => {
               <AddCommentsBtn>Add</AddCommentsBtn>
               <Line />
               <Comment>
-                <img src={plant.author.photo} alt="photo" />
+                <img src={plant.author.photo} alt="plant_photo" />
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque quae nam at aperiam voluptatem repellat! Deleniti facilis fugiat eum est!</p>
                 <span>21.03.2022</span>
               </Comment>
               <Line /> 
               <Comment>
-                <img src={plant.author.photo} alt="photo" />
+                <img src={plant.author.photo} alt="plant_photo" />
                 <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dicta, sit impedit error odit necessitatibus atque?</p>
                 <span>21.03.2022</span>
               </Comment>
               <Line />
               <Comment>
-                <img src={plant.author.photo} alt="photo" />
+                <img src={plant.author.photo} alt="plant_photo" />
                 <p>Lorem ipsum dolor sit amet.</p>
                 <span>21.03.2022</span>
               </Comment>
@@ -139,7 +145,7 @@ const Plant = () => {
             }
           </SubContainer>
         </>
-      }     
+      }
     </Container>
   )
 };
@@ -213,6 +219,7 @@ const Slider = styled.div`
     width: auto;
     color: ${palette.LIGHT_GREEN};
     background-color: ${palette.DARK_GREEN};
+    border: none;
     border-radius: 50%;
     padding: 5px 10px;
     margin: -22px;

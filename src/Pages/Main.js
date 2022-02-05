@@ -36,7 +36,7 @@ const Main = () => {
                 {(
                   <PlantContainer key={plant.id}>
                     <ImageDiv>
-                      {plant.imagesUrl ? <img src={plant.imagesUrl[0]} alt="plant" /> : <img src={logo} alt='image'/>}
+                      {plant.imagesUrl ? <img src={plant.imagesUrl[0]} alt="plant_plant" /> : <img src={logo} alt='logo_image'/>}
                     </ImageDiv>
                     <TextDiv>
                         <div>
@@ -44,7 +44,7 @@ const Main = () => {
                           <p>{plant.plantLocation ? plant.plantLocation : <br/>}</p>
                         </div>
                         <div className='groupTwo'>
-                          <img src={plant.author.photo ? plant.author.photo : logo} alt="photo" />
+                          <img src={plant.author.photo ? plant.author.photo : logo} alt="plant_photo" />
                           <LinkToPlant to={plant.id}>Check More</LinkToPlant>
                         </div>
                     </TextDiv>
