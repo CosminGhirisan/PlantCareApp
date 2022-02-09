@@ -3,13 +3,18 @@ import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import * as palette from '../Variables';
-import { LightFull, WaterFull, Heart, Star } from '../assets/AllSvg';
+import { LightFull, WaterFull, Heart, Star, Edit } from '../assets/AllSvg';
 import { useUserAuth } from '../userAuthContext';
 import Loader from '../Components/Loader';
 
+/* get the plant data from Firebase
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase-config';
+*/
+
 const Plant = () => {
   let { plantId } = useParams();
-  const { user, handleDelete, plantsList } = useUserAuth();
+  const { user, handleDelete, handleEdit, plantsList } = useUserAuth();
   const [plant,setPlant] = useState([]);
   const [isloading, setIsLoading] = useState(true);
   const [slideIndex, setSlideIndex] = useState(1);
@@ -21,8 +26,6 @@ const Plant = () => {
   },[])
   
   /* get the plant data from Firebase
-    import { doc } from 'firebase/firestore';
-    import { db } from '../firebase-config';
     const docRef = doc(db, "plants", plantId);
     useEffect(() => {
       const getPlant = async () => {
@@ -90,6 +93,7 @@ const Plant = () => {
               </p>
               <FavoriteBtn onClick={handleFavourite}> <Heart width="25px" height="25px"fill={favourite ? 'red' : palette.LIGHT_GREEN}/></FavoriteBtn>
               <p className='plantDescription'>{plant.plantDescription ? plant.plantDescription : "No description yet!"}</p>
+              <EditBtn onClick={() => handleEdit(plant.id, plant.plantDescription)}><Edit width="16px" fill={palette.DARK_GREEN}/></EditBtn>
             </Description>
           </SubContainer>
           <SubContainer>
@@ -280,7 +284,7 @@ const Description = styled.div`
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -120px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   border-top-left-radius: 40px;
   border-bottom-left-radius: 40px;
-  padding: 20px 20px 20px 25px;
+  padding: 20px 20px 35px 25px;
 
   h4{
     font-size: ${palette.FONTSIZE_L};
@@ -319,7 +323,18 @@ const FavoriteBtn = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: ${palette.DARK_GREEN};
+  background: ${palette.DARK_GREEN};
+  border: none;
+
+  :hover{
+    cursor: pointer;
+  }
+`;
+
+const EditBtn = styled.button`
+  position: absolute;
+    right: 20px;
+  background: transparent;
   border: none;
 
   :hover{
@@ -523,6 +538,6 @@ const DeleteBtn = styled.button`
   :active{
     transform: scale(0.98);
   }
-`; 
+`;
 
 export default Plant;

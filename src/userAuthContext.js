@@ -1,6 +1,6 @@
 import React, { useContext, useState, createContext, useEffect, useRef } from "react";
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth'
-import { collection, getDocs, orderBy, query, deleteDoc, doc } from 'firebase/firestore'
+import { collection, getDocs, orderBy, query, deleteDoc, doc, updateDoc, setDoc } from 'firebase/firestore'
 import { useNavigate } from "react-router-dom";
 
 import { auth, provider, db } from "./firebase-config";
@@ -38,6 +38,18 @@ export function UserAuthContextProvider({ children }) {
       navigate("/user-profile");
    }
 
+   const handleEdit = async (id, newMessage) => {
+      newMessage = prompt("Enter the new decsription")
+      const objIndex = plantsList.findIndex((obj => obj.id === id)) // Get the object which has the same id as the one we want to update
+
+      const docRef = doc(db, "plants", id) // Get the reference of the field which should be updated
+      const payload = {plantDescription: newMessage} // Specify the field which will be updated
+      
+      plantsList[objIndex].plantDescription = newMessage; // Update that fieled    
+      await setDoc(docRef, payload, {merge: true}) // Edit the document on Firestore Database
+      navigate(`/${id}`);
+    }
+
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
          console.log("Check user auth - start");
@@ -65,11 +77,11 @@ export function UserAuthContextProvider({ children }) {
 
    /* Get the number of the plants Current User added */
    useEffect(() => {
-      console.log("No of plants request - start");
+      console.log("--- No of plants request - start");
       if(user) {
          setPlantsPerUser(plantsList.filter(x => x.author.id===user.uid).length);
       }
-      console.log("No of plants request - end");
+      console.log("--- No of plants request - end");
    },[user, plantsList])
 
    return (
@@ -77,6 +89,7 @@ export function UserAuthContextProvider({ children }) {
          signInWithGoogle, 
          signUserOut, 
          user,
+         handleEdit,
          handleDelete,
          loading,
          searchRefVal,
